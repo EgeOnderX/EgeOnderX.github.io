@@ -16,8 +16,37 @@
 
 <section class="section-card" id="contact">
     <h2>📬 Contact</h2>
-    <p>You can't reach me. Not easily.</p>
+    <p>Email: <a href="mailto:onder.ege4221998@gmail.com">onder.ege4221998@gmail.com</a></p>
+
+    <h3>💬 Leave a comment</h3>
+    <form id="commentForm">
+        <textarea id="comment" placeholder="Write something..." rows="4" style="width:100%; border-radius:8px; padding:10px;"></textarea>
+        <br><br>
+        <button type="submit" style="padding:8px 16px; border-radius:5px; background-color:#58a6ff; border:none; color:#fff;">Submit</button>
+    </form>
+
+    <div id="commentsSection" style="margin-top:20px;">
+        <h4>Comments:</h4>
+        <ul id="commentsList"></ul>
+    </div>
 </section>
+
+<script>
+// Basit frontend yorum sistemi (sadece tarayıcıda saklanır)
+const form = document.getElementById('commentForm');
+const commentList = document.getElementById('commentsList');
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const commentText = document.getElementById('comment').value.trim();
+    if(commentText !== '') {
+        const li = document.createElement('li');
+        li.textContent = commentText;
+        commentList.appendChild(li);
+        document.getElementById('comment').value = '';
+    }
+});
+</script>
 
 </body>
 </html>
