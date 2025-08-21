@@ -3,49 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Projects</title>
+    <title>Ege Önder - Projects</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Arama kutusu stilleri */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .search-box {
+            padding: 10px;
+            width: 50%;
+            max-width: 400px;
+            border: 2px solid #6200ea;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            background-color: #1a1a1a;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #bb86fc;
+            box-shadow: 0 0 8px #bb86fc;
+        }
+
+        /* GitHub Stats kısmı */
+        .github-stats {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .github-stats h2 {
+            margin-bottom: 15px;
+        }
+
+        .github-stats table {
+            margin: auto;
+            border-collapse: collapse;
+        }
+
+        .projects-section {
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Project kartları */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .project-card {
+            background: #1f1f1f;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            text-align: left;
+        }
+
+        .project-card:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+        }
+
+        .project-card h3 {
+            color: #bb86fc;
+            font-size: 20px;
+        }
+
+        .project-card p {
+            color: #ccc;
+            margin: 5px 0 10px;
+            font-size: 14px;
+        }
+
+        .project-card .stats {
+            font-size: 13px;
+            margin-bottom: 10px;
+            color: #888;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 14px;
+            background: #6200ea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #bb86fc;
+        }
+    </style>
 </head>
 <body>
-    <section id="projects">
-        <h2>📊 GitHub Stats</h2>
-        <div>
-            <img src="https://github-readme-stats.vercel.app/api?username=EgeOnderX&show_icons=true&theme=radical" alt="GitHub Stats">
+
+<!-- Top Navigation -->
+<nav>
+    <a href="index.html">Home</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/EgeOnderX" target="_blank">GitHub</a>
+    <a href="about.html">About</a>
+</nav>
+
+<!-- Header -->
+<header>
+    <img src="https://github.com/user-attachments/assets/6a82a9bd-04b0-4ed8-bf4c-cac5479cf905" alt="Ege Önder">
+    <div class="intro">
+        <h1>🚀 My Projects</h1>
+        <p>Some of the stuff I've been working on. You can find more on my GitHub profile.</p>
+    </div>
+</header>
+
+<!-- GitHub Stats Üstte -->
+<section class="github-stats">
+    <h2>📊 My GitHub Stats</h2>
+    <table>
+        <tr>
+            <td align="left">
+                <img src="https://github-readme-stats.vercel.app/api?username=EgeOnderX&show_icons=true&theme=radical" width="400px"/>
+            </td>
+            <td align="right">
+                <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=EgeOnderX&layout=compact&theme=radical" width="400px"/>
+            </td>
+        </tr>
+        <tr>
+            <td align="left">
+                <img src="https://streak-stats.demolab.com/?user=EgeOnderX&theme=radical" width="400px"/>
+            </td>
+            <td align="right"></td>
+        </tr>
+    </table>
+</section>
+
+<!-- Projeler Bölümü -->
+<main>
+    <section class="projects-section">
+        <h2>💻 My Projects</h2>
+
+        <!-- Arama Kutusu -->
+        <div class="search-container">
+            <input type="text" id="search-box" class="search-box" placeholder="🔍 Search projects...">
         </div>
 
-        <h3>🚀 My Projects</h3>
-        <ul id="projectList"></ul>
+        <div id="projects-container" class="projects-grid">
+            <p>Loading projects...</p>
+        </div>
     </section>
+</main>
 
-    <script>
-        const projectList = document.getElementById('projectList');
+<!-- JavaScript: GitHub API + Arama -->
+<script>
+    const username = "EgeOnderX";
+    const projectsContainer = document.getElementById("projects-container");
+    const searchBox = document.getElementById("search-box");
 
-        fetch('https://api.github.com/users/EgeOnderX/repos?sort=updated')
-            .then(response => response.json())
-            .then(repos => {
-                repos.forEach(repo => {
-                    if (!repo.fork) { // fork edilen projeleri atla
-                        const li = document.createElement('li');
+    let allRepos = [];
 
-                        const a = document.createElement('a');
-                        a.href = repo.html_url;
-                        a.textContent = repo.name;
-                        a.target = "_blank";
+    function renderProjects(repos) {
+        projectsContainer.innerHTML = "";
 
-                        const desc = document.createElement('p');
-                        desc.textContent = repo.description || "No description";
+        if (repos.length === 0) {
+            projectsContainer.innerHTML = "<p>⚠ No matching projects found.</p>";
+            return;
+        }
 
-                        li.appendChild(a);
-                        li.appendChild(desc);
-                        projectList.appendChild(li);
-                    }
-                });
-            })
-            .catch(err => {
-                const li = document.createElement('li');
-                li.textContent = "❌ Projeler yüklenirken hata oluştu!";
-                projectList.appendChild(li);
-                console.error(err);
-            });
-    </script>
+        repos.forEach(repo => {
+            const card = document.createElement("div");
+            card.classList.add("project-card");
+
+            card.innerHTML = `
+                <h3>${repo.name}</h3>
+                <p>${repo.description ? repo.description : "No description provided."}</p>
+                <div class="stats">
+                    ⭐ ${repo.stargazers_count} | 🍴 ${repo.forks_count}
+                </div>
+                <a href="${repo.html_url}" target="_blank" class="btn">View on GitHub</a>
+            `;
+
+            projectsContainer.appendChild(card);
+        });
+    }
+
+    fetch(`https://api.github.com/users/${username}/repos?sort=updated`)
+        .then(response => response.json())
+        .then(repos => {
+            allRepos = repos;
+            renderProjects(allRepos);
+        })
+        .catch(err => {
+            projectsContainer.innerHTML = "<p>❌ Failed to load projects.</p>";
+            console.error(err);
+        });
+
+    searchBox.addEventListener("input", () => {
+        const searchTerm = searchBox.value.toLowerCase();
+        const filteredRepos = allRepos.filter(repo =>
+            repo.name.toLowerCase().includes(searchTerm) ||
+            (repo.description && repo.description.toLowerCase().includes(searchTerm))
+        );
+        renderProjects(filteredRepos);
+    });
+</script>
+
 </body>
 </html>
