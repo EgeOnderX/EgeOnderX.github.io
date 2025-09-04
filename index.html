@@ -26,12 +26,6 @@
 </header>
 
 <main>
-    <!-- General Section -->
-    <section id="general" class="section-card">
-        <h2>📌 General</h2>
-        <pre id="generalContent">Loading...</pre>
-    </section>
-
     <!-- News Section -->
     <section id="news" class="section-card">
         <h2>📰 News</h2>
@@ -40,20 +34,6 @@
 </main>
 
 <script>
-    // Load general.txt content
-    fetch('general.txt')
-        .then(response => {
-            if (!response.ok) throw new Error("Failed to load general.txt!");
-            return response.text();
-        })
-        .then(data => {
-            document.getElementById('generalContent').textContent = data;
-        })
-        .catch(err => {
-            document.getElementById('generalContent').textContent = "❌ Failed to load General.";
-            console.error(err);
-        });
-
     // Load news.txt content
     fetch('news.txt')
         .then(response => {
