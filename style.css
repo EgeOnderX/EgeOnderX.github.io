@@ -87,24 +87,16 @@ ul li::before {
     content: "• ";
     color: #58a6ff;
 }
-/* Footer - Sticky Footer */
-html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-main {
-    flex: 1; /* İçeriğin kalan alanı kaplamasını sağlar */
-}
-
+/* Footer ortalama */
 footer {
-    background-color: #161b22;
+    display: flex;           /* Flex konteyner */
+    flex-direction: column;  /* p ve small dikey olarak dizilsin */
+    align-items: center;     /* Yatayda ortala */
+    text-align: center;      /* İçteki metinleri de ortala */
+    padding: 15px 10px;      /* Yukarı-aşağı boşluk */
+    background-color: #161b22; 
     color: #c9d1d9;
-    text-align: center;      /* Metni ortala */
-    padding: 15px 0;         /* Yukarı ve aşağı boşluk */
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.3); /* Hafif gölge */
+    width: 100%;
 }
 /* Stat bölümü */
 .stats-container {
