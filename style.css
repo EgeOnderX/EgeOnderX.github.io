@@ -87,7 +87,19 @@ ul li::before {
     content: "• ";
     color: #58a6ff;
 }
-
+/* Footer */
+footer {
+    position: fixed;         /* Ekrana sabitle */
+    bottom: 0;               /* En alta yerleştir */
+    left: 0;
+    width: 100%;             /* Sayfanın tamamına yay */
+    background-color: #161b22; /* Navbar ile uyumlu koyu renk */
+    color: #c9d1d9;
+    text-align: center;      /* Metni ortala */
+    padding: 15px 0;         /* Yukarı ve aşağı boşluk */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.3); /* Hafif gölge */
+    z-index: 1000;           /* Diğer içeriklerin üstünde */
+}
 /* Stat bölümü */
 .stats-container {
     display: flex;
