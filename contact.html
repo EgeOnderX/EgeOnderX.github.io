@@ -17,6 +17,27 @@
 <section class="section-card" id="contact">
     <h2>📬 Contact</h2>
     <p>Email: <a href="mailto:onder.ege4221998@gmail.com">onder.ege4221998@gmail.com</a></p>
+    <p>
+        <span id="email-copy-text">onder.ege4221998@gmail.com</span>
+        <button onclick="copyEmail()" style="padding:4px 8px; margin-left:5px; cursor:pointer;">Copy</button>
+    </p>
 </section>
+
+<script>
+function copyEmail() {
+    const email = document.getElementById("email-copy-text").textContent;
+    navigator.clipboard.writeText(email).then(() => {
+        alert("Email copied to clipboard!");
+    });
+}
+</script>
+
+<footer>
+  <p>© 2025 Ege Önder. All rights reserved.</p>
+  <small>
+    This website and all content, design, images, and code are the exclusive property of Ege Önder.<br>
+    No part of this website may be copied, modified, distributed, or used without express written permission.
+  </small>
+</footer>
 </body>
 </html>
