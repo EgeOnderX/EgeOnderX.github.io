@@ -7,6 +7,23 @@ body {
     padding: 0;
 }
 
+.copy-button {
+    padding: 6px 12px;
+    background-color: #161b22;  /* section-card ile aynı koyulukta */
+    color: #c9d1d9;             /* mevcut tema ile uyumlu, göz yormayan açık renk */
+    border: 1px solid #30363d;  /* hafif sınır, düğmeyi belli eder */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    font-weight: bold;
+}
+
+.copy-button:hover {
+    background-color: #0d1117;  /* biraz daha koyu hover efekti */
+    border-color: #58a6ff;      /* hafif mavi vurgu hover’da */
+}
+
+
 a {
     color: #58a6ff;
     text-decoration: none;
