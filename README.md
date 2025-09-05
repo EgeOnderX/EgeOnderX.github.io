@@ -1,2 +1,2 @@
 # [EgeOnderX.github.io](https://EgeOnderX.github.io)
-Configs. Projects. Mumbo-jumbos.
+Config files for my website.
