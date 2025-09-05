@@ -30,20 +30,43 @@
             border-color: #bb86fc;
             box-shadow: 0 0 8px #bb86fc;
         }
-
-        /* GitHub Stats kısmı */
         .github-stats {
-            text-align: center;
+            display: flex;              /* Kartları yan yana dizer */
+            justify-content: center;    /* Ortalar */
+            gap: 20px;                  /* Kartlar arası boşluk */
+            flex-wrap: wrap;            /* Küçük ekranlarda alt satıra geçsin */
             margin: 40px 0;
         }
-
+        
         .github-stats h2 {
-            margin-bottom: 15px;
+            text-align: center;
+            color: #bb86fc;
+            margin-bottom: 20px;
+            font-size: 24px;
         }
-
-        .github-stats table {
-            margin: auto;
-            border-collapse: collapse;
+        
+        .stat-card {
+            flex: 1 1 300px;            /* Kartlar eşit ve minimum 300px genişlikte */
+            max-width: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+        }
+        
+        .stat-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
         }
 
         .projects-section {
@@ -129,23 +152,15 @@
 <!-- GitHub Stats Üstte -->
 <section class="github-stats">
     <h2>📊 My GitHub Stats</h2>
-    <table>
-      <tr>
-        <td align="left">
-          <img src="https://github-readme-stats.vercel.app/api?username=EgeOnderX&show_icons=true&theme=radical" width="400px"/>
-        </td>
-        <td align="right">
-          <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=EgeOnderX&layout=compact&theme=radical" width="400px"/>
-        </td>
-      </tr>
-      <tr>
-        <td align="left">
-          <img src="https://streak-stats.demolab.com/?user=EgeOnderX&theme=radical" width="400px"/>
-        </td>
-        <td align="right">
-        </td>
-      </tr>
-    </table>
+    <div class="stat-card">
+        <img src="https://github-readme-stats.vercel.app/api?username=EgeOnderX&show_icons=true&theme=radical" alt="GitHub Stats">
+    </div>
+    <div class="stat-card">
+        <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=EgeOnderX&layout=compact&theme=radical" alt="Top Languages">
+    </div>
+    <div class="stat-card">
+        <img src="https://streak-stats.demolab.com/?user=EgeOnderX&theme=radical" alt="GitHub Streak">
+    </div>
 </section>
 
 <!-- Projeler Bölümü -->
