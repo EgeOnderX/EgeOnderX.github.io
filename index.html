@@ -31,62 +31,66 @@
         <h2>📰 News</h2>
         <div id="newsContent">Loading...</div>
     </section>
-
+    
     <style>
+    /* News kartları eski .news-item stiline uygun */
     #newsContent {
         display: flex;
         flex-direction: column;
         gap: 12px;
     }
     .news-item {
-        background-color: #1e1e1e; /* Kart rengi koyu tema ile uyumlu */
-        border-radius: 12px;       /* Köşeler yuvarlak ve düzgün */
-        padding: 15px 20px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.5); /* Hafif gölge */
-        border: 1px solid #333;    /* Hafif kenarlık */
-    }
-    }
-    .news-item .type {
-        font-weight: bold;
-        color: #2c3e50;
-    }
-        
-    .news-item .date {
-        font-size: 0.85em;
-        color: #7f8c8d;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px 15px;
+        background-color: #f9f9f9;
+        box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
     }
     .news-item .repo {
-        font-style: italic;
+        font-weight: bold;
         color: #2980b9;
     }
+    .news-item .version {
+        font-style: italic;
+        color: #7f8c8d;
+    }
+    .news-item a {
+        color: #e74c3c;
+        text-decoration: none;
+        margin-left: 5px;
+    }
+    .news-item a:hover {
+        text-decoration: underline;
+    }
     </style>
-
+    
     <script>
     const username = "EgeOnderX";
-    const excludedRepos = ["egeonderx-asistant", "EgeOnderX", "EgeOnderX-Asistant.github.io", "Ownderline"];
+    const excludedRepos = ["Ownderline"]; // Hariç tutmak istediğin repolar
     const newsContent = document.getElementById("newsContent");
-
-    fetch(`https://api.github.com/users/${username}/events/public`)
-      .then(response => response.json())
-      .then(events => {
+    
+    fetch(`https://api.github.com/users/${username}/repos`)
+      .then(res => res.json())
+      .then(repos => {
         newsContent.innerHTML = "";
-        let count = 0;
-        for (let event of events) {
-            const repoName = event.repo ? event.repo.name.split('/').pop() : "";
-            if (excludedRepos.includes(repoName)) continue;
-
-            const div = document.createElement("div");
-            div.classList.add("news-item");
-            div.innerHTML = `
-                <div class="type">Type: ${event.type}</div>
-                <div class="date">Date: ${new Date(event.created_at).toLocaleString()}</div>
-                <div class="repo">Repo: ${repoName}</div>
-            `;
-            newsContent.appendChild(div);
-
-            count++;
-            if (count >= 10) break;
-        }
+        repos.forEach(repo => {
+            if (excludedRepos.includes(repo.name)) return;
+    
+            fetch(`https://api.github.com/repos/${username}/${repo.name}/releases/latest`)
+            .then(res => res.status === 404 ? null : res.json())
+            .then(release => {
+                if (release) {
+                    const div = document.createElement("div");
+                    div.classList.add("news-item");
+                    div.innerHTML = `
+                        <div class="repo">${repo.name}</div>
+                        <div class="version">${release.tag_name} Released! — <a href="${release.html_url}" target="_blank">View Release</a></div>
+                    `;
+                    newsContent.appendChild(div);
+                }
+            })
+            .catch(err => console.error(err));
+        });
       })
       .catch(err => {
         newsContent.innerHTML = "Error: " + err;
