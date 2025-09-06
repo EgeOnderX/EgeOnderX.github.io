@@ -43,7 +43,7 @@
         border: 1px solid #ccc;
         border-radius: 8px;
         padding: 10px 15px;
-        background-color: #f9f9f9;
+        background-color: #1e1e1e;       /* Koyu arka plan */
         box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
     }
     .news-item .repo {
@@ -64,38 +64,42 @@
     }
     </style>
     
-    <script>
-    const username = "EgeOnderX";
-    const excludedRepos = ["Ownderline"]; // Hariç tutmak istediğin repolar
-    const newsContent = document.getElementById("newsContent");
-    
-    fetch(`https://api.github.com/users/${username}/repos`)
-      .then(res => res.json())
-      .then(repos => {
-        newsContent.innerHTML = "";
-        repos.forEach(repo => {
-            if (excludedRepos.includes(repo.name)) return;
-    
-            fetch(`https://api.github.com/repos/${username}/${repo.name}/releases/latest`)
-            .then(res => res.status === 404 ? null : res.json())
-            .then(release => {
-                if (release) {
-                    const div = document.createElement("div");
-                    div.classList.add("news-item");
-                    div.innerHTML = `
-                        <div class="repo">${repo.name}</div>
-                        <div class="version">${release.tag_name} Released! — <a href="${release.html_url}" target="_blank">View Release</a></div>
-                    `;
-                    newsContent.appendChild(div);
-                }
-            })
-            .catch(err => console.error(err));
-        });
-      })
-      .catch(err => {
-        newsContent.innerHTML = "Error: " + err;
-      });
-    </script>
+<script>
+const username = "EgeOnderX";
+const excludedRepos = ["Ownderline"];
+const newsContent = document.getElementById("newsContent");
+
+fetch(`https://api.github.com/users/${username}/repos`)
+  .then(res => res.json())
+  .then(repos => {
+    newsContent.innerHTML = ""; // Loading yazısını temizle
+
+    repos.forEach(repo => {
+      if (excludedRepos.includes(repo.name)) return; // Hariç tut
+
+      fetch(`https://api.github.com/repos/${username}/${repo.name}/releases/latest`)
+        .then(res => res.status === 404 ? null : res.json())
+        .then(release => {
+          if (release) {
+            const div = document.createElement("div");
+            div.classList.add("news-item");
+            div.innerHTML = `
+              <div class="repo">${repo.name}</div>
+              <div class="version">
+                ${release.tag_name} Released! — 
+                <a href="${release.html_url}" target="_blank" class="copy-button">View Release</a>
+              </div>
+            `;
+            newsContent.appendChild(div);
+          }
+        })
+        .catch(err => console.error(err));
+    });
+  })
+  .catch(err => {
+    newsContent.innerHTML = "Error: " + err;
+  });
+</script>
 </main>
 <footer>
   <p>© 2025 Ege Önder. All rights reserved.</p>
