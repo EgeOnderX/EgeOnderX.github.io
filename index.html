@@ -31,46 +31,65 @@
         <h2>📰 News</h2>
         <div id="newsContent">Loading...</div>
     </section>
-    
+
+    <style>
+    #newsContent {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .news-item {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px 15px;
+        background-color: #f9f9f9;
+        box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
+    }
+    .news-item .type {
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    .news-item .date {
+        font-size: 0.85em;
+        color: #7f8c8d;
+    }
+    .news-item .repo {
+        font-style: italic;
+        color: #2980b9;
+    }
+    </style>
+
     <script>
     const username = "EgeOnderX";
-        const excludedRepos = ["egeonderx-asistant1", "EgeOnderX", "EgeOnderX.github.io", "Ownderline"]; // Repositories to exclude
+    const excludedRepos = ["egeonderx-asistant1", "EgeOnderX", "EgeOnderX.github.io", "Ownderline"];
     const newsContent = document.getElementById("newsContent");
-    
+
     fetch(`https://api.github.com/users/${username}/events/public`)
       .then(response => response.json())
       .then(events => {
-        newsContent.innerHTML = ""; // clear loading
+        newsContent.innerHTML = "";
         let count = 0;
         for (let event of events) {
-          const repoName = event.repo ? event.repo.name.split('/').pop() : "";
-          if (excludedRepos.includes(repoName)) continue;
-    
-          const div = document.createElement("div");
-          div.classList.add("news-item"); // CSS sınıfını haber kartları için kullanabilirsin
-          div.innerHTML = `
-            <strong>Type:</strong> ${event.type}<br>
-            <strong>Date:</strong> ${new Date(event.created_at).toLocaleString()}<br>
-            <strong>Repo:</strong> ${repoName}
-          `;
-          newsContent.appendChild(div);
-    
-          count++;
-          if (count >= 10) break; // show max 10 events
+            const repoName = event.repo ? event.repo.name.split('/').pop() : "";
+            if (excludedRepos.includes(repoName)) continue;
+
+            const div = document.createElement("div");
+            div.classList.add("news-item");
+            div.innerHTML = `
+                <div class="type">Type: ${event.type}</div>
+                <div class="date">Date: ${new Date(event.created_at).toLocaleString()}</div>
+                <div class="repo">Repo: ${repoName}</div>
+            `;
+            newsContent.appendChild(div);
+
+            count++;
+            if (count >= 10) break;
         }
       })
       .catch(err => {
         newsContent.innerHTML = "Error: " + err;
       });
     </script>
-    
-    <style>
-    #newsContent .news-item {
-        border-bottom: 1px solid #ccc;
-        margin-bottom: 10px;
-        padding-bottom: 10px;
-    }
-    </style>
 </main>
 <footer>
   <p>© 2025 Ege Önder. All rights reserved.</p>
