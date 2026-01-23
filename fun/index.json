@@ -1,5 +1,7 @@
-{
-  "name": "Microslop",
-  "html": "microslop/microslop.html",
-  "image": "microslop/microslop.png"
-}
+[
+  {
+    "name": "Microslop",
+    "html": "microslop/microslop.html",
+    "image": "microslop/microslop.png"
+  }
+]
