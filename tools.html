@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools - Ege Önder</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Araç Kartları */
+        .tool-card {
+            display: inline-block;
+            width: 300px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin: 20px;
+            cursor: pointer;
+            text-align: center;
+            background-color: #161b22;
+            transition: transform 0.2s;
+        }
+        .tool-card:hover { transform: scale(1.05); }
+        .tool-card img { width: 100%; height: auto; display: block; }
+        .tool-card h3 { color: #58a6ff; margin: 10px 0; }
+        #toolsList { display: flex; flex-wrap: wrap; justify-content: center; }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+    <a href="index.html">Home</a>
+    <a href="https://github.com/EgeOnderX" target="_blank">GitHub</a>
+    <a href="projects.html">Projects</a>
+    <a href="fun.html">Fun</a>
+    <a href="tools.html">Tools</a>
+    <a href="about.html">About</a>
+</nav>
+
+<section class="section-card">
+    <h2>🛠️ Tools</h2>
+    <div id="toolsList">Loading...</div>
+</section>
+
+<script>
+fetch("tools/index.json")
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("toolsList");
+    container.innerHTML = "";
+    data.forEach(item => {
+      // normalize: küçük harfe çevir
+      const htmlPath = item.html.toLowerCase();
+      const imgPath  = item.image.toLowerCase();
+      const name     = item.name;
+
+      const card = document.createElement("a");
+      card.href = htmlPath;
+      card.className = "tool-card";
+      card.innerHTML = `
+        <img src="${imgPath}" alt="${name}">
+        <h3>${name}</h3>
+      `;
+      container.appendChild(card);
+    });
+  })
+  .catch(err => {
+    document.getElementById("toolsList").innerText = "Error loading tools.";
+    console.error(err);
+  });
+</script>
+
+<footer>
+    <p>© 2025 Ege Önder. All rights reserved.</p>
+    <small>
+        This website and all content, design, images, and code are the exclusive property of Ege Önder.<br>
+        No part of this website may be copied, modified, distributed, or used without express written permission.
+    </small>
+</footer>
+
+</body>
+</html>
