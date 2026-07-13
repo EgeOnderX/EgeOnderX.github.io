@@ -3,9 +3,7 @@
 Config files for my website.
 
 ## 🛠️ Recent Changes
-- Added **Fun** section to the navigation bar 🎮  
-- Moved the **Contact** section into **About** for a cleaner structure ✉️ → ℹ️  
-
+- Added tools menu with Easyboot web edition.
 ## 🎮 Fun Projects
 - **Microslop**: A parody project full of absurd ads, fake downloads, and nonsense popups.  
   👉 Entire Microslop game was **written by Microslop's Copilot AI** (😂).  
