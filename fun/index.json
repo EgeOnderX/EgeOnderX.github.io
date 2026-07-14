@@ -3,5 +3,10 @@
     "name": "Microslop",
     "html": "fun/microslop/microslop.html",
     "image": "fun/microslop/microslop.png"
+  },
+  {
+    "name": "Pingpong",
+    "html": "fun/pingpong/pingpong.html",
+    "image": "fun/pingpong/pingpong.png"
   }
 ]
