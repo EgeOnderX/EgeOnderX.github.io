@@ -3,5 +3,10 @@
     "name": "EasyBoot",
     "html": "tools/easyboot/easyboot.html",
     "image": "tools/easyboot/easyboot.png"
+  },
+  {
+    "name": "DumbGpt",
+    "html": "tools/dumbgpt/dumbgpt.html",
+    "image": "tools/dumbgpt/dumbgpt.png"
   }
 ]
