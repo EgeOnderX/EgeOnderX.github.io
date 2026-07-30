@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Gram AI (DumbGpt) - Ege Önder</title>
+    <!-- CSS located 3 levels up -->
+    <link rel="stylesheet" href="../../../style.css">
+    <style>
+        /* Chat UI Styles */
+        .chat-card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .chat-box {
+            height: 380px;
+            overflow-y: auto;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #0d1117;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+        .user-message {
+            align-self: flex-end;
+            background-color: #1f6beb;
+            color: #ffffff;
+        }
+        .bot-message {
+            align-self: flex-start;
+            background-color: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+        }
+        .chat-input-row {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-row input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-size: 0.95em;
+            outline: none;
+        }
+        .chat-input-row input:focus {
+            border-color: #58a6ff;
+        }
+        .chat-input-row button {
+            padding: 12px 20px;
+            background-color: #238636;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .chat-input-row button:hover {
+            background-color: #2ea043;
+        }
+        .stats-badge {
+            font-size: 0.85em;
+            color: #8b949e;
+            margin-top: 5px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .btn-secondary {
+            background-color: #21262d;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #30363d;
+            border-color: #8b949e;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<nav>
+    <a href="../../../index.html">Home</a>
+    <a href="https://github.com/EgeOnderX" target="_blank">GitHub</a>
+    <a href="../../../projects.html">Projects</a>
+    <a href="../../../fun.html">Fun</a>
+    <a href="../../../tools.html">Tools</a>
+    <a href="../../../about.html">About</a>
+</nav>
+
+<!-- Header -->
+<header>
+    <img src="https://github.com/user-attachments/assets/6a82a9bd-04b0-4ed8-bf4c-cac5479cf905" alt="Ege Önder">
+    <div class="intro">
+        <h1>🧠 N-Gram AI (DumbGpt)</h1>
+        <p>A lightweight, 100% offline language model running on a dynamic 2D–5D N-gram transition architecture.</p>
+    </div>
+</header>
+
+<main>
+    <!-- Brief Overview Section -->
+    <section class="section-card">
+        <h2>📰 Project Highlights</h2>
+        <ul>
+            <li><strong>Dynamic N-Gram Engine:</strong> Uses 2D to 5D token context windows to predict natural word transitions without cloud APIs.</li>
+            <li><strong>Context Fallback Strategy:</strong> Evaluates context from highest (5D) to lowest (2D) tier to maintain maximum sentence coherence.</li>
+            <li><strong>Self-Training Memory:</strong> Learns new vocabulary and n-gram associations directly from conversation inputs in real time.</li>
+        </ul>
+        <div class="btn-group">
+            <button class="btn-secondary" onclick="loadDefaultBrain()">📚 Add Default English Dictionary</button>
+            <button class="btn-secondary" onclick="downloadBrainFile()">📥 Download Current Memory (DumbGpt.brain)</button>
+        </div>
+    </section>
+
+    <!-- Interactive Live Chat Section -->
+    <section class="chat-card">
+        <h2>💬 Chat with DumbGpt</h2>
+        <p>Type a message below to talk with DumbGpt live in your browser. The model will learn from your inputs as you chat.</p>
+        
+        <div class="chat-box" id="chatBox">
+            <div class="message bot-message">
+                Hello! I am DumbGpt. Talk to me so I can learn and respond using my N-gram brain!
+            </div>
+        </div>
+
+        <div class="chat-input-row">
+            <input type="text" id="userInput" placeholder="Type a message (e.g. 'hello world', 'how are you')..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <div class="stats-badge" id="vocabStats">Learned Vocabulary: 12 words</div>
+    </section>
+</main>
+
+<footer>
+  <p>© 2026 Ege Önder. All rights reserved.</p>
+  <small>
+    This website and all content, design, images, and code are the exclusive property of Ege Önder.<br>
+    No part of this website may be copied, modified, distributed, or used without express written permission.
+  </small>
+</footer>
+
+<!-- In-Browser DumbGpt N-Gram Engine -->
+<script>
+class DumbGptEngine {
+    constructor() {
+        this.vocab = new Set(["hello", "world", "this", "is", "dumbgpt", "a", "lightweight", "offline", "language", "model", "talk", "me"]);
+        this.brain_2d = {
+            "hello": { "world": 3, "there": 1 },
+            "this": { "is": 4 },
+            "is": { "a": 2, "dumbgpt": 3 },
+            "dumbgpt": { "is": 2, "model": 1 }
+        };
+        this.brain_3d = {
+            "this is": { "a": 2, "dumbgpt": 2 },
+            "hello world": { "this": 1 }
+        };
+        this.brain_4d = {};
+        this.brain_5d = {};
+    }
+
+    cleanWords(text) {
+        return text.toLowerCase()
+            .replace(/[^\w\s]/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length > 0);
+    }
+
+    train(text) {
+        const words = this.cleanWords(text);
+        if (words.length < 2) {
+            words.forEach(w => this.vocab.add(w));
+            return;
+        }
+
+        words.forEach(w => this.vocab.add(w));
+
+        for (let i = 0; i < words.length; i++) {
+            if (i < words.length - 1) {
+                const w1 = words[i], w2 = words[i + 1];
+                if (!this.brain_2d[w1]) this.brain_2d[w1] = {};
+                this.brain_2d[w1][w2] = (this.brain_2d[w1][w2] || 0) + 1;
+            }
+            if (i < words.length - 2) {
+                const key = `${words[i]} ${words[i + 1]}`;
+                const next = words[i + 2];
+                if (!this.brain_3d[key]) this.brain_3d[key] = {};
+                this.brain_3d[key][next] = (this.brain_3d[key][next] || 0) + 1;
+            }
+            if (i < words.length - 3) {
+                const key = `${words[i]} ${words[i + 1]} ${words[i + 2]}`;
+                const next = words[i + 3];
+                if (!this.brain_4d[key]) this.brain_4d[key] = {};
+                this.brain_4d[key][next] = (this.brain_4d[key][next] || 0) + 1;
+            }
+            if (i < words.length - 4) {
+                const key = `${words[i]} ${words[i + 1]} ${words[i + 2]} ${words[i + 3]}`;
+                const next = words[i + 4];
+                if (!this.brain_5d[key]) this.brain_5d[key] = {};
+                this.brain_5d[key][next] = (this.brain_5d[key][next] || 0) + 1;
+            }
+        }
+    }
+
+    getCandidates(history) {
+        if (history.length >= 4) {
+            const key5 = history.slice(-4).join(' ');
+            if (this.brain_5d[key5]) return this.brain_5d[key5];
+        }
+        if (history.length >= 3) {
+            const key4 = history.slice(-3).join(' ');
+            if (this.brain_4d[key4]) return this.brain_4d[key4];
+        }
+        if (history.length >= 2) {
+            const key3 = history.slice(-2).join(' ');
+            if (this.brain_3d[key3]) return this.brain_3d[key3];
+        }
+        if (history.length >= 1) {
+            const key2 = history[history.length - 1];
+            if (this.brain_2d[key2]) return this.brain_2d[key2];
+        }
+        return null;
+    }
+
+    generateResponse(userInput, maxLength = 15) {
+        const words = this.cleanWords(userInput);
+        if (words.length === 0) return "Please write something to chat...";
+
+        let response = [];
+        const lastWord = words[words.length - 1];
+
+        if (this.brain_2d[lastWord]) {
+            response.push(lastWord);
+        } else {
+            const vocabArray = Array.from(this.vocab);
+            response.push(vocabArray[Math.floor(Math.random() * vocabArray.length)]);
+        }
+
+        for (let i = 0; i < maxLength; i++) {
+            const candidates = this.getCandidates(response);
+            if (!candidates) break;
+
+            const keys = Object.keys(candidates);
+            const nextWord = keys[Math.floor(Math.random() * keys.length)];
+            response.push(nextWord);
+        }
+
+        let result = response.join(" ");
+        return result.charAt(0).toUpperCase() + result.slice(1) + ".";
+    }
+
+    getExportableBrain() {
+        return {
+            vocab: Array.from(this.vocab),
+            brain_2d: this.brain_2d,
+            brain_3d: this.brain_3d,
+            brain_4d: this.brain_4d,
+            brain_5d: this.brain_5d
+        };
+    }
+}
+
+// Global Engine Instance
+const bot = new DumbGptEngine();
+
+// Load External JSON Brain Function
+async function loadDefaultBrain() {
+    try {
+        const response = await fetch('dumbgpt.brain');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Merge Vocabulary
+        if (data.vocab && Array.isArray(data.vocab)) {
+            data.vocab.forEach(w => bot.vocab.add(w));
+        }
+
+        // Helper function to merge n-gram dictionaries
+        const mergeDictionary = (target, source) => {
+            if (!source) return;
+            for (let key in source) {
+                if (!target[key]) target[key] = {};
+                for (let nextWord in source[key]) {
+                    target[key][nextWord] = (target[key][nextWord] || 0) + source[key][nextWord];
+                }
+            }
+        };
+
+        // Merge all N-Gram dimensions
+        mergeDictionary(bot.brain_2d, data.brain_2d);
+        mergeDictionary(bot.brain_3d, data.brain_3d);
+        mergeDictionary(bot.brain_4d, data.brain_4d);
+        mergeDictionary(bot.brain_5d, data.brain_5d);
+
+        updateStats();
+        alert("✅ Default English Dictionary (dumbgpt.brain) loaded and merged successfully!");
+        appendMessage("System: Default dictionary has been loaded into my memory. I am much smarter now!", "bot-message");
+        
+    } catch (error) {
+        console.error("Failed to load dumbgpt.brain:", error);
+        alert("❌ Failed to load 'dumbgpt.brain'.\n\nEnsure that the file exists in the same directory and you are running this through a web server (like GitHub Pages or VS Code Live Server). Direct file:// execution may block the fetch request.");
+    }
+}
+
+function sendMessage() {
+    const inputEl = document.getElementById("userInput");
+    const text = inputEl.value.trim();
+    if (!text) return;
+
+    // Render User Message
+    appendMessage(text, "user-message");
+    inputEl.value = "";
+
+    // Train & Generate Response
+    bot.train(text);
+    const botReply = bot.generateResponse(text);
+
+    // Render Bot Response after tiny delay
+    setTimeout(() => {
+        appendMessage(botReply, "bot-message");
+        updateStats();
+    }, 200);
+}
+
+function handleKeyPress(e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+}
+
+function appendMessage(text, className) {
+    const chatBox = document.getElementById("chatBox");
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `message ${className}`;
+    msgDiv.textContent = text;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function updateStats() {
+    document.getElementById("vocabStats").textContent = `Learned Vocabulary: ${bot.vocab.size} words`;
+}
+
+function downloadBrainFile() {
+    const brainData = JSON.stringify(bot.getExportableBrain(), null, 2);
+    const blob = new Blob([brainData], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "dumbgpt.brain";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Initial stats update
+updateStats();
+</script>
+
+</body>
+</html>
