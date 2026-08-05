@@ -4,6 +4,7 @@ Config files for my website.
 
 ## 🛠️ Recent Changes
 - Added tools menu with Easyboot web edition.
+- Added my own ai (dumbgpt) to tools menu.
 ## 🎮 Fun Projects
 - **Microslop**: A parody project full of absurd ads, fake downloads, and nonsense popups.  
   👉 Entire Microslop game was **written by Microslop's Copilot AI** (😂).  
@@ -14,7 +15,10 @@ Config files for my website.
 - `about.html` → About section (now includes Contact)  
 - `projects.html` → Projects showcase  
 - `fun/` → Mini games and parody projects  
-  - `microslop/` → Microslop parody project  
+  - `microslop/` → Microslop parody project
+- `tools/` → Randoom tools 
+  - `dumbgpt/` → My own ai
+  - `easyboot/` → You know
 
 ---
 
