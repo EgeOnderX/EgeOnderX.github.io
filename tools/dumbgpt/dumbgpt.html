@@ -143,6 +143,8 @@
         <div class="btn-group">
             <button class="btn-secondary" onclick="loadDefaultBrain()">📚 Add Default English Dictionary</button>
             <button class="btn-secondary" onclick="downloadBrainFile()">📥 Download Current Memory (DumbGpt.brain)</button>
+            <button class="btn-secondary" onclick="document.getElementById('importBrainInput').click()">📤 Import Brain File</button>
+            <input type="file" id="importBrainInput" accept=".brain,.json" style="display: none;" onchange="importBrainFile(event)">
         </div>
     </section>
 
@@ -526,6 +528,47 @@ async function loadDefaultBrain() {
         console.error("Failed to load dumbgpt.brain:", error);
         alert("❌ Failed to load 'dumbgpt.brain'. Ensure the file exists and you are running via a web server.");
     }
+}
+
+function importBrainFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            if (data.vocab && Array.isArray(data.vocab)) {
+                data.vocab.forEach(w => bot.vocab.add(w));
+            }
+
+            const mergeDictionary = (target, source) => {
+                if (!source) return;
+                for (let key in source) {
+                    if (!target[key]) target[key] = {};
+                    for (let nextWord in source[key]) {
+                        target[key][nextWord] = (target[key][nextWord] || 0) + source[key][nextWord];
+                    }
+                }
+            };
+
+            mergeDictionary(bot.brain_2d, data.brain_2d);
+            mergeDictionary(bot.brain_3d, data.brain_3d);
+            mergeDictionary(bot.brain_4d, data.brain_4d);
+            mergeDictionary(bot.brain_5d, data.brain_5d);
+
+            updateStats();
+            alert("✅ Custom Brain file imported and merged successfully!");
+            appendMessage("Custom brain dictionary has been loaded into my memory.", "system-message");
+        } catch (error) {
+            console.error("Failed to parse brain file:", error);
+            alert("❌ Failed to parse the brain file. Ensure it is a valid JSON format.");
+        }
+        // Reset the file input so the same file can be selected again
+        event.target.value = "";
+    };
+    reader.readAsText(file);
 }
 
 function sendMessage() {
