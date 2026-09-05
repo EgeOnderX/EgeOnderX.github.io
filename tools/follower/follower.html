@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Follower Manager</title>
+    <!-- Üst klasörün üst klasöründeki style.css -->
+    <link rel="stylesheet" href="../../style.css">
+    <style>
+        .app-container {
+            max-width: 650px;
+            margin: 30px auto;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .top-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        input, select {
+            padding: 8px 12px;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .btn-opt1 {
+            background-color: #b22222;
+            color: #ffffff;
+            border: 1px solid #d9534f;
+        }
+        .btn-opt1:hover {
+            background-color: #8b0000;
+        }
+        .btn-opt2 {
+            background-color: #104e8b;
+            color: #ffffff;
+            border: 1px solid #0275d8;
+        }
+        .btn-opt2:hover {
+            background-color: #082e54;
+        }
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            background-color: #238636;
+            color: #ffffff;
+            border: 1px solid #2ea043;
+            font-size: 15px;
+        }
+        .btn-action:hover:not(:disabled) {
+            background-color: #2ea043;
+        }
+        .btn-action:disabled {
+            background-color: #21262d;
+            border-color: #30363d;
+            color: #484f58;
+            cursor: not-allowed;
+        }
+        .status-label {
+            font-size: 13px;
+            font-style: italic;
+            color: #8b949e;
+            min-height: 20px;
+            margin: 5px 0;
+        }
+        .user-list {
+            max-height: 220px;
+            overflow-y: auto;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        .user-list li {
+            font-family: 'Consolas', 'Courier New', monospace;
+            padding: 4px 8px;
+            border-bottom: 1px solid #21262d;
+        }
+        .user-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Light Theme Overrides */
+        body.light-theme {
+            background-color: #f5f5f5;
+            color: #000000;
+        }
+        body.light-theme .section-card {
+            background-color: #ffffff;
+            color: #000000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        body.light-theme h2 {
+            color: #0969da;
+        }
+        body.light-theme input,
+        body.light-theme select {
+            background-color: #ffffff;
+            color: #000000;
+            border-color: #d0d7de;
+        }
+        body.light-theme .user-list {
+            background-color: #ffffff;
+            border-color: #d0d7de;
+        }
+        body.light-theme .user-list li {
+            border-bottom-color: #f0f0f0;
+            color: #000000;
+        }
+        body.light-theme .status-label {
+            color: #57606a;
+        }
+        body.light-theme .btn-action:disabled {
+            background-color: #d0e3d4;
+            border-color: #d0e3d4;
+            color: #888888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="top-bar">
+        <div class="top-bar-item">
+            <label id="lbl_lang" for="select_lang"></label>
+            <select id="select_lang">
+                <option value="English" selected>English</option>
+                <option value="Türkçe">Türkçe</option>
+                <option value="中文">中文</option>
+                <option value="Deutsch">Deutsch</option>
+            </select>
+        </div>
+        <div class="top-bar-item">
+            <label id="lbl_theme" for="select_theme"></label>
+            <select id="select_theme">
+                <option value="Dark" selected>Dark</option>
+                <option value="Light">Light</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2 id="title_input"></h2>
+        <div class="form-group">
+            <label id="lbl_username" for="entry_username"></label>
+            <input type="text" id="entry_username" placeholder="e.g. octocat">
+        </div>
+        <div class="form-group">
+            <label id="lbl_token" for="entry_token"></label>
+            <input type="password" id="entry_token" placeholder="ghp_xxxxxxxxxxxx">
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button id="btn_opt1" class="copy-button btn-opt1"></button>
+        <button id="btn_opt2" class="copy-button btn-opt2"></button>
+    </div>
+
+    <div id="lbl_status" class="status-label"></div>
+
+    <div class="section-card">
+        <h2 id="title_results"></h2>
+        <ul id="user_list" class="user-list"></ul>
+    </div>
+
+    <button id="btn_action" class="copy-button btn-action" disabled></button>
+</div>
+
+<script>
+const LOCALES = {
+    "English": {
+        "title": "GitHub Follower Manager",
+        "input_frame": "GitHub Credentials",
+        "username": "GitHub Username:",
+        "token": "Personal Access Token:",
+        "lang_label": "Language:",
+        "theme_label": "Theme:",
+        "opt1_btn": "Option 1: Non-Followers (Unfollow)",
+        "opt2_btn": "Option 2: Followers You Don't Follow",
+        "result_frame": "Results List",
+        "action_default": "Select an Option Above",
+        "action_unfollow": "Unfollow All ({count})",
+        "action_follow": "Follow Back All ({count})",
+        "fetching": "Fetching data from GitHub... Please wait.",
+        "processing": "Processing users... Please wait.",
+        "btn_finished": "Completed",
+        "err_username": "Please enter your GitHub username.",
+        "err_token": "Personal Access Token is required for this action!",
+        "confirm_action": "Are you sure you want to {action} {count} users?",
+        "action_unfollow_text": "unfollow",
+        "action_follow_text": "follow",
+        "success_msg": "Operation Completed!\n{success}/{total} users processed successfully."
+    },
+    "Türkçe": {
+        "title": "GitHub Takipçi Yöneticisi",
+        "input_frame": "GitHub Hesabı ve Yetkilendirme",
+        "username": "GitHub Kullanıcı Adı:",
+        "token": "Personal Access Token:",
+        "lang_label": "Dil / Language:",
+        "theme_label": "Tema / Theme:",
+        "opt1_btn": "Opsiyon 1: Geri Takip Etmeyenler",
+        "opt2_btn": "Opsiyon 2: Takip Etmediğin Takipçiler",
+        "result_frame": "Sonuç Listesi",
+        "action_default": "Yukarıdan Bir Seçenek Seçin",
+        "action_unfollow": "Tümünü Takipten Çıkar ({count})",
+        "action_follow": "Tümünü Geri Takip Et ({count})",
+        "fetching": "GitHub'dan veriler çekiliyor... Lütfen bekleyin.",
+        "processing": "Kullanıcılar işleniyor... Lütfen bekleyin.",
+        "btn_finished": "İşlem Bitti",
+        "err_username": "Lütfen kullanıcı adınızı girin.",
+        "err_token": "Takip etme / çıkarma işlemi için Token gereklidir!",
+        "confirm_action": "{count} kullanıcıyı {action} istediğinize emin misiniz?",
+        "action_unfollow_text": "takipten çıkarmak",
+        "action_follow_text": "takip etmek",
+        "success_msg": "İşlem Tamamlandı!\n{success}/{total} kullanıcı işlendi."
+    },
+    "中文": {
+        "title": "GitHub 关注者管理器",
+        "input_frame": "GitHub 凭据与授权",
+        "username": "GitHub 用户名:",
+        "token": "个人访问令牌 (Token):",
+        "lang_label": "语言 / Language:",
+        "theme_label": "主题 / Theme:",
+        "opt1_btn": "选项 1: 未回关用户 (取消关注)",
+        "opt2_btn": "选项 2: 未关注的粉丝 (相互关注)",
+        "result_frame": "结果列表",
+        "action_default": "请在上方选择一个选项",
+        "action_unfollow": "取消关注全部 ({count})",
+        "action_follow": "关注全部 ({count})",
+        "fetching": "正在从 GitHub 获取数据... 请稍候。",
+        "processing": "正在处理用户... 请稍候。",
+        "btn_finished": "处理完成",
+        "err_username": "请输入您的 GitHub 用户名。",
+        "err_token": "执行关注/取消关注操作需要 Token！",
+        "confirm_action": "确定要对 {count} 名用户执行 {action} 操作吗？",
+        "action_unfollow_text": "取消关注",
+        "action_follow_text": "关注",
+        "success_msg": "操作完成！\n已成功处理 {success}/{total} 名用户。"
+    },
+    "Deutsch": {
+        "title": "GitHub Follower Manager",
+        "input_frame": "GitHub Anmeldedaten",
+        "username": "GitHub-Benutzername:",
+        "token": "Personal Access Token:",
+        "lang_label": "Sprache:",
+        "theme_label": "Design:",
+        "opt1_btn": "Opt 1: Nicht-Follower (Entfolgen)",
+        "opt2_btn": "Opt 2: Ausstehende Follower (Zurückfolgen)",
+        "result_frame": "Ergebnisse",
+        "action_default": "Wählen Sie oben eine Option",
+        "action_unfollow": "Allen entfolgen ({count})",
+        "action_follow": "Allen zurückfolgen ({count})",
+        "fetching": "Daten werden von GitHub abgerufen...",
+        "processing": "Benutzer werden verarbeitet...",
+        "btn_finished": "Abgeschlossen",
+        "err_username": "Bitte geben Sie Ihren GitHub-Benutzernamen ein.",
+        "err_token": "Personal Access Token ist erforderlich!",
+        "confirm_action": "Möchten Sie wirklich {count} Benutzern {action}?",
+        "action_unfollow_text": "entfolgen",
+        "action_follow_text": "folgen",
+        "success_msg": "Vorgang abgeschlossen!\n{success}/{total} Benutzer verarbeitet."
+    }
+};
+
+let currentLang = "English";
+let currentTheme = "Dark";
+let currentData = [];
+let activeMode = null;
+
+function t(key, params = {}) {
+    let text = LOCALES[currentLang][key] || "";
+    for (const [k, v] of Object.entries(params)) {
+        text = text.replace(`{${k}}`, v);
+    }
+    return text;
+}
+
+function updateLanguage(lang) {
+    currentLang = lang;
+    document.title = t("title");
+    document.getElementById("lbl_lang").textContent = t("lang_label");
+    document.getElementById("lbl_theme").textContent = t("theme_label");
+    document.getElementById("title_input").textContent = t("input_frame");
+    document.getElementById("lbl_username").textContent = t("username");
+    document.getElementById("lbl_token").textContent = t("token");
+    document.getElementById("btn_opt1").textContent = t("opt1_btn");
+    document.getElementById("btn_opt2").textContent = t("opt2_btn");
+    document.getElementById("title_results").textContent = t("result_frame");
+
+    const btnAction = document.getElementById("btn_action");
+    if (currentData.length > 0 && activeMode) {
+        const key = activeMode === "unfollow" ? "action_unfollow" : "action_follow";
+        btnAction.textContent = t(key, { count: currentData.length });
+    } else if (btnAction.disabled && btnAction.textContent !== t("btn_finished")) {
+        btnAction.textContent = t("action_default");
+    }
+}
+
+function applyTheme(theme) {
+    currentTheme = theme;
+    if (theme === "Light") {
+        document.body.classList.add("light-theme");
+    } else {
+        document.body.classList.remove("light-theme");
+    }
+}
+
+function setUIState(isLoading) {
+    document.getElementById("btn_opt1").disabled = isLoading;
+    document.getElementById("btn_opt2").disabled = isLoading;
+    document.getElementById("select_lang").disabled = isLoading;
+    document.getElementById("select_theme").disabled = isLoading;
+}
+
+function getHeaders() {
+    const token = document.getElementById("entry_token").value.trim();
+    const headers = { "Accept": "application/vnd.github.v3+json" };
+    if (token) {
+        headers["Authorization"] = `token ${token}`;
+    }
+    return headers;
+}
+
+async function fetchAllPages(url) {
+    let items = [];
+    let page = 1;
+    const headers = getHeaders();
+
+    while (true) {
+        try {
+            const res = await fetch(`${url}?per_page=100&page=${page}`, { headers });
+            if (!res.ok) {
+                const data = await res.json();
+                alert(`API Error (${res.status}): ${data.message || 'Error'}`);
+                return null;
+            }
+            const data = await res.json();
+            if (!data || data.length === 0) break;
+            items.push(...data.map(u => u.login));
+            page++;
+        } catch (e) {
+            alert(`Error: ${e.message}`);
+            return null;
+        }
+    }
+    return new Set(items);
+}
+
+async function fetchNonFollowers() {
+    const username = document.getElementById("entry_username").value.trim();
+    if (!username) {
+        alert(t("err_username"));
+        return;
+    }
+
+    setUIState(true);
+    document.getElementById("lbl_status").textContent = t("fetching");
+    clearList();
+
+    const following = await fetchAllPages(`https://api.github.com/users/${username}/following`);
+    const followers = await fetchAllPages(`https://api.github.com/users/${username}/followers`);
+
+    if (following !== null && followers !== null) {
+        const nonFollowers = Array.from(following).filter(x => !followers.has(x)).sort();
+        currentData = nonFollowers;
+        activeMode = "unfollow";
+        updateListUI(nonFollowers, t("action_unfollow", { count: nonFollowers.length }), () => executeMassAction(nonFollowers, "unfollow"));
+    }
+
+    document.getElementById("lbl_status").textContent = "";
+    setUIState(false);
+}
+
+async function fetchFans() {
+    const username = document.getElementById("entry_username").value.trim();
+    if (!username) {
+        alert(t("err_username"));
+        return;
+    }
+
+    setUIState(true);
+    document.getElementById("lbl_status").textContent = t("fetching");
+    clearList();
+
+    const following = await fetchAllPages(`https://api.github.com/users/${username}/following`);
+    const followers = await fetchAllPages(`https://api.github.com/users/${username}/followers`);
+
+    if (following !== null && followers !== null) {
+        const pendingFollowers = Array.from(followers).filter(x => !following.has(x)).sort();
+        currentData = pendingFollowers;
+        activeMode = "follow";
+        updateListUI(pendingFollowers, t("action_follow", { count: pendingFollowers.length }), () => executeMassAction(pendingFollowers, "follow"));
+    }
+
+    document.getElementById("lbl_status").textContent = "";
+    setUIState(false);
+}
+
+function clearList() {
+    document.getElementById("user_list").innerHTML = "";
+}
+
+function updateListUI(items, btnText, actionCallback) {
+    const listEl = document.getElementById("user_list");
+    items.forEach(user => {
+        const li = document.createElement("li");
+        li.textContent = user;
+        listEl.appendChild(li);
+    });
+
+    const btnAction = document.getElementById("btn_action");
+    if (items.length > 0) {
+        btnAction.textContent = btnText;
+        btnAction.disabled = false;
+        btnAction.onclick = actionCallback;
+    } else {
+        btnAction.textContent = t("action_default");
+        btnAction.disabled = true;
+    }
+}
+
+async function executeMassAction(targetList, mode) {
+    const token = document.getElementById("entry_token").value.trim();
+    if (!token) {
+        alert(t("err_token"));
+        return;
+    }
+
+    const actionWord = mode === "unfollow" ? t("action_unfollow_text") : t("action_follow_text");
+    const confirmMsg = t("confirm_action", { action: actionWord, count: targetList.length });
+    
+    if (!confirm(confirmMsg)) return;
+
+    setUIState(true);
+    document.getElementById("lbl_status").textContent = t("processing");
+
+    const headers = getHeaders();
+    let successCount = 0;
+
+    for (const targetUser of targetList) {
+        const url = `https://api.github.com/user/following/${targetUser}`;
+        const method = mode === "unfollow" ? "DELETE" : "PUT";
+
+        try {
+            const res = await fetch(url, { method, headers });
+            if (res.status === 204 || res.status === 201) {
+                successCount++;
+            }
+        } catch (e) {}
+    }
+
+    alert(t("success_msg", { success: successCount, total: targetList.length }));
+    
+    clearList();
+    currentData = [];
+    activeMode = null;
+
+    const btnAction = document.getElementById("btn_action");
+    btnAction.disabled = true;
+    btnAction.textContent = t("btn_finished");
+    document.getElementById("lbl_status").textContent = "";
+    setUIState(false);
+}
+
+// Event Listeners
+document.getElementById("select_lang").addEventListener("change", (e) => updateLanguage(e.target.value));
+document.getElementById("select_theme").addEventListener("change", (e) => applyTheme(e.target.value));
+document.getElementById("btn_opt1").addEventListener("click", fetchNonFollowers);
+document.getElementById("btn_opt2").addEventListener("click", fetchFans);
+
+// Init
+updateLanguage(currentLang);
+applyTheme(currentTheme);
+</script>
+</body>
+</html>
