@@ -8,5 +8,10 @@
     "name": "DumbGpt",
     "html": "tools/dumbgpt/dumbgpt.html",
     "image": "tools/dumbgpt/dumbgpt.png"
+  },
+  {
+    "name": "Follower Manager",
+    "html": "tools/follower/follower.html",
+    "image": "tools/follower/follower.png"
   }
 ]
